@@ -1,0 +1,35 @@
+Windows Registry Editor Version 5.00
+
+; Configure Chinese (Simplified) Input Method settings for Xiaoheshuangpin (小鹤双拼) scheme
+; This registry file sets up the double pinyin input method preferences
+[HKEY_CURRENT_USER\Software\Microsoft\InputMethod\Settings\CHS]
+
+; Disable cloud-based candidate suggestions
+"Enable Cloud Candidate"=dword:00000000
+
+; Enable dynamic candidate ranking based on usage
+"Enable Dynamic Candidate Ranking"=dword:00000001
+
+; Enable extra domain-specific dictionaries
+"EnableExtraDomainType"=dword:00000001
+
+; Enable self-learning from user input
+"Enable self-learning"=dword:00000001
+
+; Enable smart self-learning
+"EnableSmartSelfLearning"=dword:00000001
+
+; Disable live sticker suggestions
+"EnableLiveSticker"=dword:00000000
+
+; Enable EUDP (Extended User Dictionary Pinyin)
+"Enable EUDP"=dword:00000001
+
+; Enable double pinyin input method
+"Enable Double Pinyin"=dword:00000001
+
+; Define custom double pinyin scheme mapping for Xiaoheshuangpin layout
+"UserDefinedDoublePinyinScheme0"="小鹤双拼*2*^*iuvdjhcwfg^xmlnpbksqszxkrltvyovt"
+
+; Set active double pinyin scheme to custom scheme (0x0a = 10)
+"DoublePinyinScheme"=dword:0000000a
