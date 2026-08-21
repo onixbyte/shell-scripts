@@ -2,11 +2,6 @@
 
 set -euo pipefail
 
-# Configuration & URLs
-BIN_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil"
-SHA_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil.sha256sum"
-TARGET_PATH="/usr/local/bin/tosutil"
-
 # Helper function to print and execute commands
 run_cmd() {
     echo ">> Running: $*"
@@ -19,12 +14,33 @@ if [ "$(id -u)" -ne 0 ]; then
     SUDO="sudo"
 fi
 
+echo "=== Starting tosutil installation for Linux ==="
+
+# Architecture Detection
+ARCH=$(uname -m)
+case "$ARCH" in
+    x86_64|amd64)
+        BIN_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil"
+        SHA_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil.sha256sum"
+        echo "Detected architecture: amd64 (${ARCH})"
+        ;;
+    aarch64|arm64)
+        BIN_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/arm64/tosutil"
+        SHA_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/arm64/tosutil.sha256sum"
+        echo "Detected architecture: arm64 (${ARCH})"
+        ;;
+    *)
+        echo "Error: Unsupported architecture: ${ARCH}" >&2
+        exit 1
+        ;;
+esac
+
+TARGET_PATH="/usr/local/bin/tosutil"
+
 # Create isolated temporary directory
 TMP_DIR=$(mktemp -d /tmp/tosutil-install.XXXXXX)
 trap 'rm -rf "$TMP_DIR"' EXIT
 cd "$TMP_DIR"
-
-echo "=== Starting tosutil installation ==="
 
 # Download binary and checksum
 echo -e "\n[1/5] Downloading tosutil binary and SHA256 checksum..."
