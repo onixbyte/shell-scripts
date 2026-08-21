@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Configuration & URLs
+BIN_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil"
+SHA_URL="https://m645b3e1bb36e-mrap.mrap.accesspoint.tos-global.volces.com/linux/amd64/tosutil.sha256sum"
+TARGET_PATH="/usr/local/bin/tosutil"
+
+# Helper function to print and execute commands
+run_cmd() {
+    echo ">> Running: $*"
+    "$@"
+}
+
+# Determine sudo requirement
+SUDO=""
+if [ "$(id -u)" -ne 0 ]; then
+    SUDO="sudo"
+fi
+
+# Create isolated temporary directory
+TMP_DIR=$(mktemp -d /tmp/tosutil-install.XXXXXX)
+trap 'rm -rf "$TMP_DIR"' EXIT
+cd "$TMP_DIR"
+
+echo "=== Starting tosutil installation ==="
+
+# Download binary and checksum
+echo -e "\n[1/5] Downloading tosutil binary and SHA256 checksum..."
+run_cmd wget -q --show-progress -O tosutil "$BIN_URL"
+run_cmd wget -q --show-progress -O tosutil.sha256sum "$SHA_URL"
+
+# Verify SHA256
+echo -e "\n[2/5] Verifying SHA256 checksum..."
+# Check format: ensure the checksum file points to the local filename
+if grep -q "tosutil" tosutil.sha256sum; then
+    run_cmd sha256sum -c tosutil.sha256sum
+else
+    # Fallback if sha256sum contains only the hash string
+    EXPECTED_HASH=$(awk '{print $1}' tosutil.sha256sum)
+    echo ">> Running: echo \"$EXPECTED_HASH  tosutil\" | sha256sum -c -"
+    echo "$EXPECTED_HASH  tosutil" | sha256sum -c -
+fi
+
+# Move binary to /usr/local/bin
+echo -e "\n[3/5] Moving binary to ${TARGET_PATH}..."
+run_cmd $SUDO mv tosutil "$TARGET_PATH"
+
+# Set ownership and permissions
+echo -e "\n[4/5] Setting owner and permissions..."
+run_cmd $SUDO chown root:root "$TARGET_PATH"
+run_cmd $SUDO chmod 755 "$TARGET_PATH"
+
+# Completion check
+echo -e "\n[5/5] Checking installation..."
+run_cmd tosutil version || run_cmd tosutil --version || true
+
+echo -e "\n✅ tosutil installed successfully to ${TARGET_PATH}."
