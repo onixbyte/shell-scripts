@@ -33,11 +33,9 @@ run_cmd wget -q --show-progress -O tosutil.sha256sum "$SHA_URL"
 
 # Verify SHA256
 echo -e "\n[2/5] Verifying SHA256 checksum..."
-# Check format: ensure the checksum file points to the local filename
 if grep -q "tosutil" tosutil.sha256sum; then
     run_cmd sha256sum -c tosutil.sha256sum
 else
-    # Fallback if sha256sum contains only the hash string
     EXPECTED_HASH=$(awk '{print $1}' tosutil.sha256sum)
     echo ">> Running: echo \"$EXPECTED_HASH  tosutil\" | sha256sum -c -"
     echo "$EXPECTED_HASH  tosutil" | sha256sum -c -
@@ -54,6 +52,13 @@ run_cmd $SUDO chmod 755 "$TARGET_PATH"
 
 # Completion check
 echo -e "\n[5/5] Checking installation..."
-run_cmd tosutil version || run_cmd tosutil --version || true
+run_cmd tosutil version || true
 
-echo -e "\n✅ tosutil installed successfully to ${TARGET_PATH}."
+echo -e "\n========================================================"
+echo -e "✅ tosutil installed successfully to ${TARGET_PATH}."
+echo -e "========================================================"
+echo -e "\nNext Steps:"
+echo -e "1. Initialise and configure your credentials:"
+echo -e '   tosutil config -i "${TOS_ACCESS_KEY}" -k "${TOS_SECRET_KEY}" -e "${TOS_ENDPOINT}" -re "${TOS_REGION}"'
+echo -e "\n2. For more detailed documentation, visit:"
+echo -e "   https://docs.volcengine.com/docs/6349/148775?lang=zh\n"
