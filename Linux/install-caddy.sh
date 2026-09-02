@@ -17,6 +17,8 @@ S3_REGION="${S3_REGION:-us-east-1}"
 S3_ACCESS_KEY="${S3_ACCESS_KEY:-}"
 S3_SECRET_KEY="${S3_SECRET_KEY:-}"
 BIN_URI="${BIN_URI:-caddy-custom-linux-amd64}"
+# S3 addressing style: 'virtual' (default), 'path', or 'auto'
+S3_ADDRESSING_STYLE="${S3_ADDRESSING_STYLE:-virtual}"
 
 BIN_SOURCE="./${BIN_URI}"
 BIN_DEST="/usr/local/bin/caddy"
@@ -34,10 +36,12 @@ if [ ! -f "${BIN_SOURCE}" ]; then
     if [ -n "${S3_BUCKET}" ]; then
         echo "Local binary '${BIN_SOURCE}' not found. Downloading from S3 bucket '${S3_BUCKET}'..."
 
-        # Export AWS credentials for the current execution
+        # Configure addressing style and region
+        aws configure set default.s3.addressing_style "${S3_ADDRESSING_STYLE}"
+        aws configure set default.region "${S3_REGION}"
+
         export AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY}"
         export AWS_SECRET_ACCESS_KEY="${S3_SECRET_KEY}"
-        export AWS_DEFAULT_REGION="${S3_REGION}"
 
         AWS_CMD_ARGS=()
         if [ -n "${S3_ENDPOINT}" ]; then
