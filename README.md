@@ -2,15 +2,6 @@
 
 A collection of utility scripts for system and development task automation across Windows platforms. These scripts streamline common administrative tasks and enhance productivity.
 
-## Contents
-
-### Windows Scripts
-
-- **RouteManager.ps1** - PowerShell utility for managing network route configurations
-- **switch-right-click-menu-to-win10.cmd** - Switches Windows Explorer context menu to Windows 10 style
-- **switch-right-click-menu-to-win11.cmd** - Switches Windows Explorer context menu to Windows 11 style
-- **xiaoheshuangpin.reg** - Registry configuration for Xiaohe Shuangpin (小鹤双拼) Chinese input method
-
 ## Usage
 
 1. Review the specific script documentation before use
